@@ -68,10 +68,13 @@ Bu uygulamanın Kick mesajlarını göstermesi için sadece web sayfası yetmez.
 3. Aynı sunucu WebSocket ile overlay sayfasına mesajı aktarır.
 4. Overlay sayfası mesajı HTML olarak çizilir.
 
+Ek olarak, Kick tarafında event subscription oluşturulmuş olmalı. Bu uygulama OAuth tamamlandıktan sonra `chat.message.sent` için subscription oluşturmaya çalışır. Subscription oluşmazsa overlay `0 mesaj işlendi` olarak kalır.
+
 Bağlantı kurulmadı görünüyorsa en yaygın nedenler:
 
 - Kick webhook URL'si Render adresine değil localhost'a yazılmıştır.
 - Kick panelinde webhook toggle kapalıdır.
+- OAuth tamamlandı ama subscription oluşmadıysa login akışını bir kez daha çalıştırman gerekir.
 - `URL Yönlendirme` alanı Render callback yolu ile birebir eşleşmiyordur.
 - Render free instance uykuya geçtiği için ilk istek gecikmiştir.
 - OBS sayfası `file://` üzerinden açılmıştır; mutlaka `https://kickchatbox.onrender.com/` kullanılmalıdır.
