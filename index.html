@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,8 +31,15 @@
 			--sans: 'Space Grotesk', 'Segoe UI', sans-serif;
 		}
 
-		* { box-sizing: border-box; }
-		html, body { height: 100%; }
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			height: 100%;
+		}
+
 		body {
 			margin: 0;
 			color: var(--text);
@@ -50,10 +58,10 @@
 			inset: 0;
 			pointer-events: none;
 			background-image:
-				linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-				linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+				linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 			background-size: 60px 60px;
-			mask-image: linear-gradient(180deg, rgba(0,0,0,0.72), transparent 95%);
+			mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 95%);
 			opacity: 0.35;
 		}
 
@@ -113,7 +121,10 @@
 			box-shadow: 0 0 14px var(--accent);
 		}
 
-		h1, h2, h3, p {
+		h1,
+		h2,
+		h3,
+		p {
 			margin: 0;
 		}
 
@@ -226,9 +237,12 @@
 			padding: 18px 18px 20px;
 		}
 
-		.scroll-area::-webkit-scrollbar { width: 10px; }
+		.scroll-area::-webkit-scrollbar {
+			width: 10px;
+		}
+
 		.scroll-area::-webkit-scrollbar-thumb {
-			background: rgba(255,255,255,0.14);
+			background: rgba(255, 255, 255, 0.14);
 			border: 2px solid transparent;
 			background-clip: content-box;
 			border-radius: 999px;
@@ -249,7 +263,7 @@
 			gap: 12px;
 			padding: 14px 16px;
 			border-bottom: 1px solid var(--border);
-			background: rgba(255,255,255,0.02);
+			background: rgba(255, 255, 255, 0.02);
 		}
 
 		.section-title {
@@ -282,16 +296,18 @@
 			margin-bottom: 8px;
 		}
 
-		input, textarea, select {
+		input,
+		textarea,
+		select {
 			width: 100%;
-			border: 1px solid rgba(255,255,255,0.12);
+			border: 1px solid rgba(255, 255, 255, 0.12);
 			border-radius: 12px;
 			background: rgba(8, 10, 15, 0.86);
 			color: var(--text);
 			padding: 13px 14px;
 			outline: none;
 			font: inherit;
-			box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+			box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 		}
 
 		textarea {
@@ -302,11 +318,14 @@
 			line-height: 1.55;
 		}
 
-		input::placeholder, textarea::placeholder {
+		input::placeholder,
+		textarea::placeholder {
 			color: #6f7b8d;
 		}
 
-		input:focus, textarea:focus, select:focus {
+		input:focus,
+		textarea:focus,
+		select:focus {
 			border-color: rgba(125, 240, 208, 0.6);
 			box-shadow: 0 0 0 4px rgba(125, 240, 208, 0.12);
 		}
@@ -317,7 +336,10 @@
 			align-items: flex-end;
 		}
 
-		.field-row > div { flex: 1; min-width: 0; }
+		.field-row>div {
+			flex: 1;
+			min-width: 0;
+		}
 
 		.btn-row {
 			display: flex;
@@ -335,12 +357,12 @@
 			border-radius: 12px;
 			padding: 12px 16px;
 			color: var(--text);
-			background: rgba(255,255,255,0.08);
+			background: rgba(255, 255, 255, 0.08);
 			transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 		}
 
 		button:hover {
-			background: rgba(255,255,255,0.13);
+			background: rgba(255, 255, 255, 0.13);
 			transform: translateY(-1px);
 		}
 
@@ -355,7 +377,7 @@
 		}
 
 		button.ghost {
-			background: rgba(255,255,255,0.04);
+			background: rgba(255, 255, 255, 0.04);
 			border: 1px solid var(--border);
 		}
 
@@ -379,7 +401,7 @@
 			padding: 8px 10px;
 			border-radius: 999px;
 			border: 1px solid var(--border);
-			background: rgba(255,255,255,0.03);
+			background: rgba(255, 255, 255, 0.03);
 			color: var(--muted);
 			font-size: 12px;
 		}
@@ -403,7 +425,7 @@
 			padding: 11px 12px;
 			border: 1px solid var(--border);
 			border-radius: 12px;
-			background: rgba(255,255,255,0.03);
+			background: rgba(255, 255, 255, 0.03);
 			font-size: 13px;
 			line-height: 1.45;
 			color: var(--text);
@@ -468,7 +490,7 @@
 			gap: 8px;
 			padding: 10px 12px;
 			border-radius: 999px;
-			background: rgba(255,255,255,0.04);
+			background: rgba(255, 255, 255, 0.04);
 			border: 1px solid var(--border);
 			color: var(--muted);
 			font-size: 12px;
@@ -481,17 +503,25 @@
 			background: #64748b;
 		}
 
-		.badge.live .mini-dot { background: var(--accent); }
-		.badge.warn .mini-dot { background: var(--warn); }
+		.badge.live .mini-dot {
+			background: var(--accent);
+		}
+
+		.badge.warn .mini-dot {
+			background: var(--warn);
+		}
 
 		.feed {
 			overflow: auto;
 			padding: 16px;
 		}
 
-		.feed::-webkit-scrollbar { width: 10px; }
+		.feed::-webkit-scrollbar {
+			width: 10px;
+		}
+
 		.feed::-webkit-scrollbar-thumb {
-			background: rgba(255,255,255,0.14);
+			background: rgba(255, 255, 255, 0.14);
 			border: 2px solid transparent;
 			background-clip: content-box;
 			border-radius: 999px;
@@ -503,16 +533,16 @@
 			gap: 12px;
 			padding: 14px 14px 14px 12px;
 			margin-bottom: 12px;
-			border: 1px solid rgba(255,255,255,0.08);
+			border: 1px solid rgba(255, 255, 255, 0.08);
 			border-radius: 18px;
-			background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+			background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
 			animation: enter 220ms ease-out;
 		}
 
 		.message.system {
 			grid-template-columns: 1fr;
 			color: var(--muted);
-			background: rgba(255,255,255,0.03);
+			background: rgba(255, 255, 255, 0.03);
 			border-style: dashed;
 			padding: 12px 14px;
 		}
@@ -597,8 +627,8 @@
 			padding: 1px 6px;
 			margin: 0 2px;
 			border-radius: 8px;
-			background: rgba(255,255,255,0.08);
-			border: 1px solid rgba(255,255,255,0.08);
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.08);
 			color: #fff;
 			font-size: 12px;
 			font-family: var(--mono);
@@ -613,7 +643,7 @@
 			align-items: center;
 			color: var(--muted);
 			font-size: 12px;
-			background: rgba(255,255,255,0.02);
+			background: rgba(255, 255, 255, 0.02);
 		}
 
 		.footer .mono {
@@ -631,80 +661,274 @@
 			line-height: 1.55;
 		}
 
-		.hidden { display: none !important; }
+		.hidden {
+			display: none !important;
+		}
 
 
 		/* OBS Browser Source: /overlay?channel=kanal-adi&relay=wss%3A%2F%2Fornek.com */
-		body.obs-overlay { background: transparent; overflow: hidden; }
-		body.obs-overlay::before { display: none; }
-		body.obs-overlay .app { width: 100%; height: 100%; margin: 0; padding: 28px; display: block; }
+		body.obs-overlay {
+			background: transparent;
+			overflow: hidden;
+		}
+
+		body.obs-overlay::before {
+			display: none;
+		}
+
+		body.obs-overlay .app {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 28px;
+			display: block;
+		}
+
 		body.obs-overlay .sidebar,
 		body.obs-overlay .overlay-top,
-		body.obs-overlay .footer { display: none; }
+		body.obs-overlay .footer {
+			display: none;
+		}
+
 		body.obs-overlay .overlay {
-			width: min(680px, 100%); height: 100%; min-height: 0; margin-left: 0;
-			background: transparent; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none;
+			width: min(680px, 100%);
+			height: 100%;
+			min-height: 0;
+			margin-left: 0;
+			background: transparent;
+			border: 0;
+			border-radius: 0;
+			box-shadow: none;
+			backdrop-filter: none;
 		}
+
 		body.obs-overlay .feed {
-			height: 100%; padding: 0; overflow: hidden; display: flex;
-			flex-direction: column; justify-content: flex-end;
+			height: 100%;
+			padding: 0;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
 		}
+
 		body.obs-overlay .message {
-			flex: 0 0 auto; margin-bottom: 10px;
+			flex: 0 0 auto;
+			margin-bottom: 10px;
 			background: linear-gradient(135deg, rgba(8, 13, 23, 0.90), rgba(18, 27, 41, 0.84));
-			border-color: rgba(255,255,255,0.14); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+			border-color: rgba(255, 255, 255, 0.14);
+			box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
 		}
-		body.obs-overlay .message.system { display: none; }
+
+		body.obs-overlay .message.system {
+			display: none;
+		}
 
 
-		.overlay-selector { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 18px 18px; }
-		.overlay-link { display: block; padding: 11px 10px; border-radius: 10px; border: 1px solid var(--border); color: var(--text); text-align: center; text-decoration: none; font-size: 12px; background: rgba(255,255,255,0.04); transition: 160ms ease; }
-		.overlay-link:hover { border-color: rgba(125,240,208,0.45); color: var(--accent); transform: translateY(-1px); }
-		body.obs-overlay .message-source { display: none; }
-		body.obs-overlay.obs-minimal .overlay { width: min(900px, 100%); }
-		body.obs-overlay.obs-minimal .minimal-message { display: block; padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 10px; }
-		body.obs-overlay.obs-minimal .minimal-line { padding: 5px 0; color: #fff; font-size: 22px; line-height: 1.35; text-shadow: 0 2px 5px rgba(0,0,0,.75); }
-		body.obs-overlay.obs-minimal .minimal-icons { display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; vertical-align: middle; }
-		body.obs-overlay.obs-minimal .minimal-icons img { width: 22px; height: 22px; object-fit: contain; }
-		body.obs-overlay.obs-minimal .minimal-name { font-weight: 700; margin-right: 14px; }
-		body.obs-overlay.obs-minimal .minimal-content { font-weight: 500; }
-		body.obs-overlay.obs-social .overlay { width: min(560px, 100%); }
-		body.obs-overlay.obs-social .social-message { display: block; width: min(100%, 520px); padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 16px; }
-		body.obs-overlay.obs-social .social-message.social-right { align-self: flex-end; text-align: right; }
-		body.obs-overlay.obs-social .social-message.social-left { align-self: flex-start; text-align: left; }
-		body.obs-overlay.obs-social .social-head { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 12px; background: rgba(8,13,23,.88); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 6px 16px rgba(0,0,0,.24); }
-		body.obs-overlay.obs-social .social-right .social-head { flex-direction: row-reverse; }
-		body.obs-overlay.obs-social .social-user { font-weight: 700; font-size: 17px; }
-		body.obs-overlay.obs-social .social-icons { display: inline-flex; align-items: center; gap: 5px; }
-		body.obs-overlay.obs-social .social-icons img { width: 19px; height: 19px; object-fit: contain; }
-		body.obs-overlay.obs-social .social-content { padding: 7px 2px 0; color: #fff; font-size: 18px; line-height: 1.4; text-shadow: 0 2px 5px rgba(0,0,0,.78); }
-		@media (max-width: 760px) { .overlay-selector { grid-template-columns: 1fr; } }
+		.overlay-selector {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 10px;
+			padding: 14px 18px 18px;
+		}
+
+		.overlay-link {
+			display: block;
+			padding: 11px 10px;
+			border-radius: 10px;
+			border: 1px solid var(--border);
+			color: var(--text);
+			text-align: center;
+			text-decoration: none;
+			font-size: 12px;
+			background: rgba(255, 255, 255, 0.04);
+			transition: 160ms ease;
+		}
+
+		.overlay-link:hover {
+			border-color: rgba(125, 240, 208, 0.45);
+			color: var(--accent);
+			transform: translateY(-1px);
+		}
+
+		body.obs-overlay .message-source {
+			display: none;
+		}
+
+		body.obs-overlay.obs-minimal .overlay {
+			width: min(900px, 100%);
+		}
+
+		body.obs-overlay.obs-minimal .minimal-message {
+			display: block;
+			padding: 0;
+			border: 0;
+			background: transparent;
+			box-shadow: none;
+			margin-bottom: 10px;
+		}
+
+		body.obs-overlay.obs-minimal .minimal-line {
+			padding: 5px 0;
+			color: #fff;
+			font-size: 22px;
+			line-height: 1.35;
+			text-shadow: 0 2px 5px rgba(0, 0, 0, .75);
+		}
+
+		body.obs-overlay.obs-minimal .minimal-icons {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			margin-right: 8px;
+			vertical-align: middle;
+		}
+
+		body.obs-overlay.obs-minimal .minimal-icons img {
+			width: 22px;
+			height: 22px;
+			object-fit: contain;
+		}
+
+		body.obs-overlay.obs-minimal .minimal-name {
+			font-weight: 700;
+			margin-right: 14px;
+		}
+
+		body.obs-overlay.obs-minimal .minimal-content {
+			font-weight: 500;
+		}
+
+		body.obs-overlay.obs-social .overlay {
+			width: min(560px, 100%);
+		}
+
+		body.obs-overlay.obs-social .social-message {
+			display: flex;
+			flex-direction: column;
+			width: min(100%, 520px);
+			padding: 0;
+			border: 0;
+			background: transparent;
+			box-shadow: none;
+			margin-bottom: 16px;
+		}
+
+		body.obs-overlay.obs-social .social-message.social-right {
+			align-self: flex-start;
+		}
+
+		body.obs-overlay.obs-social .social-message.social-left {
+			align-self: flex-start;
+		}
+
+		body.obs-overlay.obs-social .social-head {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 11px;
+			border-radius: 12px;
+			background: rgba(8, 13, 23, .88);
+			border: 1px solid rgba(255, 255, 255, .14);
+			box-shadow: 0 6px 16px rgba(0, 0, 0, .24);
+		}
+
+		body.obs-overlay.obs-social .social-right .social-head {
+			margin-left: auto;
+			flex-direction: row-reverse;
+		}
+
+		body.obs-overlay.obs-social .social-user {
+			font-weight: 700;
+			font-size: 17px;
+		}
+
+		body.obs-overlay.obs-social .social-icons {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+		}
+
+		body.obs-overlay.obs-social .social-icons img {
+			width: 19px;
+			height: 19px;
+			object-fit: contain;
+		}
+
+		body.obs-overlay.obs-social .social-content {
+			padding: 7px 2px 0;
+			color: #fff;
+			font-size: 18px;
+			line-height: 1.4;
+			text-shadow: 0 2px 5px rgba(0, 0, 0, .78);
+			text-align: left;
+		}
+
+		@media (max-width: 760px) {
+			.overlay-selector {
+				grid-template-columns: 1fr;
+			}
+		}
 
 		@keyframes enter {
-			from { transform: translateY(8px); opacity: 0; }
-			to { transform: translateY(0); opacity: 1; }
+			from {
+				transform: translateY(8px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
 		}
 
 		@media (max-width: 1120px) {
-			body { overflow: auto; }
+			body {
+				overflow: auto;
+			}
+
 			.app {
 				height: auto;
 				min-height: 100vh;
 				grid-template-columns: 1fr;
 			}
-			.overlay { min-height: 760px; }
+
+			.overlay {
+				min-height: 760px;
+			}
 		}
 
 		@media (max-width: 760px) {
-			.app { padding: 12px; gap: 12px; }
-			.meta-grid, .grid-form, .checks { grid-template-columns: 1fr; }
-			.title { font-size: 26px; }
-			.overlay-top { flex-direction: column; }
-			.overlay-badges { justify-content: flex-start; }
-			.field-row { flex-direction: column; align-items: stretch; }
+			.app {
+				padding: 12px;
+				gap: 12px;
+			}
+
+			.meta-grid,
+			.grid-form,
+			.checks {
+				grid-template-columns: 1fr;
+			}
+
+			.title {
+				font-size: 26px;
+			}
+
+			.overlay-top {
+				flex-direction: column;
+			}
+
+			.overlay-badges {
+				justify-content: flex-start;
+			}
+
+			.field-row {
+				flex-direction: column;
+				align-items: stretch;
+			}
 		}
 	</style>
 </head>
+
 <body>
 	<div class="app">
 		<aside class="panel sidebar">
@@ -713,7 +937,8 @@
 				<div class="title-row">
 					<div>
 						<h1 class="title">Uygulamanız</h1>
-						<p class="subtitle">Kick OAuth PKCE ile oturum açar, webhook relay üzerinden gelen chat mesajlarını işler ve OBS için okunabilir bir HTML katmanı üretir.</p>
+						<p class="subtitle">Kick OAuth PKCE ile oturum açar, webhook relay üzerinden gelen chat
+							mesajlarını işler ve OBS için okunabilir bir HTML katmanı üretir.</p>
 					</div>
 					<div id="authStatus" class="status-pill">
 						<span class="status-dot"></span>
@@ -748,16 +973,20 @@
 						</div>
 					</div>
 					<div class="overlay-selector">
-						<a class="overlay-link" data-overlay-mode="classic" target="_blank" rel="noopener">Kartlı overlay</a>
-						<a class="overlay-link" data-overlay-mode="minimal" target="_blank" rel="noopener">Minimal overlay</a>
-						<a class="overlay-link" data-overlay-mode="social" target="_blank" rel="noopener">Social overlay</a>
+						<a class="overlay-link" data-overlay-mode="classic" target="_blank" rel="noopener">Kartlı
+							overlay</a>
+						<a class="overlay-link" data-overlay-mode="minimal" target="_blank" rel="noopener">Minimal
+							overlay</a>
+						<a class="overlay-link" data-overlay-mode="social" target="_blank" rel="noopener">Social
+							overlay</a>
 					</div>
 				</section>
 				<section class="section">
 					<div class="section-header">
 						<div>
 							<div class="section-title">OAuth / Kick App Ayarları</div>
-							<div class="section-note">Kick uygulamanızın Client ID’sini girin. Static HTML içinde client secret güvenli değildir; gerekirse backend’e taşıyın.</div>
+							<div class="section-note">Kick uygulamanızın Client ID’sini girin. Static HTML içinde client
+								secret güvenli değildir; gerekirse backend’e taşıyın.</div>
 						</div>
 						<button id="fillDemo" class="ghost" type="button">Örnek doldur</button>
 					</div>
@@ -769,11 +998,12 @@
 						</div>
 						<div>
 							<label for="clientSecret">İstemci Parolası (Client Secret)</label>
-							<input id="clientSecret" type="password" autocomplete="off" placeholder="Yalnızca test için">
+							<input id="clientSecret" type="password" autocomplete="off"
+								placeholder="Yalnızca test için">
 						</div>
 						<div>
 							<label for="redirectUri">Yönlendirme URI</label>
-							  <input id="redirectUri" autocomplete="off" placeholder="http://localhost:8787/">
+							<input id="redirectUri" autocomplete="off" placeholder="http://localhost:8787/">
 						</div>
 						<div>
 							<label for="channelSlug">Kanal Slug</label>
@@ -785,11 +1015,13 @@
 						</div>
 						<div>
 							<label for="scope">Scope</label>
-							<input id="scope" autocomplete="off" placeholder="events:subscribe channel:read" value="events:subscribe channel:read">
+							<input id="scope" autocomplete="off" placeholder="events:subscribe channel:read"
+								value="events:subscribe channel:read">
 						</div>
 						<div class="wide">
 							<label for="notes">Not</label>
-							<textarea id="notes" readonly>Kick webhooks public bir URL ister. Bu tek HTML dosyası, canlı mesajları göstermek için bir WebSocket relay bekler. Relay, Kick webhook payload'larını alıp bu sayfaya aktarmalıdır.</textarea>
+							<textarea id="notes"
+								readonly>Kick webhooks public bir URL ister. Bu tek HTML dosyası, canlı mesajları göstermek için bir WebSocket relay bekler. Relay, Kick webhook payload'larını alıp bu sayfaya aktarmalıdır.</textarea>
 						</div>
 					</div>
 
@@ -804,7 +1036,8 @@
 					<div class="section-header">
 						<div>
 							<div class="section-title">Canlı Durum</div>
-							<div class="section-note">Yetkilendirme, relay durumu ve en son alınan mesajlar burada görünür.</div>
+							<div class="section-note">Yetkilendirme, relay durumu ve en son alınan mesajlar burada
+								görünür.</div>
 						</div>
 					</div>
 					<div class="chip-row">
@@ -813,7 +1046,9 @@
 						<div class="chip"><strong>Son olay</strong> <span id="lastEventSummary">-</span></div>
 					</div>
 					<div class="hint">
-						Kick tarafında <strong>chat.message.sent</strong> event’i webhook olarak gelir. Bu sayfayı OBS’de doğrudan gösterebilirsiniz, fakat mesajları almak için webhook’u public bir relay’e bağlamanız gerekir. Relay mesajları WebSocket ile buraya iletmeli.
+						Kick tarafında <strong>chat.message.sent</strong> event’i webhook olarak gelir. Bu sayfayı
+						OBS’de doğrudan gösterebilirsiniz, fakat mesajları almak için webhook’u public bir relay’e
+						bağlamanız gerekir. Relay mesajları WebSocket ile buraya iletmeli.
 					</div>
 				</section>
 
@@ -821,13 +1056,15 @@
 					<div class="section-header">
 						<div>
 							<div class="section-title">Test Mesajı</div>
-							<div class="section-note">Relay olmadan da tasarımı denemek için örnek webhook payload’ı ekleyin.</div>
+							<div class="section-note">Relay olmadan da tasarımı denemek için örnek webhook payload’ı
+								ekleyin.</div>
 						</div>
 					</div>
 					<div class="grid-form" style="padding-top: 0;">
 						<div class="wide">
 							<label for="manualPayload">Webhook JSON</label>
-							<textarea id="manualPayload" placeholder='{"message_id":"1","content":"Merhaba chat!","sender":{"username":"teObot","identity":{"username_color":"#7df0d0","badges":[{"text":"Bot","type":"bot"}]},"profile_picture":""},"created_at":"2026-07-25T10:00:00Z","eventType":"chat.message.sent"}'></textarea>
+							<textarea id="manualPayload"
+								placeholder='{"message_id":"1","content":"Merhaba chat!","sender":{"username":"teObot","identity":{"username_color":"#7df0d0","badges":[{"text":"Bot","type":"bot"}]},"profile_picture":""},"created_at":"2026-07-25T10:00:00Z","eventType":"chat.message.sent"}'></textarea>
 						</div>
 					</div>
 					<div class="btn-row">
@@ -843,7 +1080,8 @@
 			<div class="overlay-top">
 				<div>
 					<h2 class="overlay-title" id="overlayTitle">teObot</h2>
-					<p class="overlay-subtitle" id="overlaySubtitle">Hazır olduğunda gelen Kick chat mesajları burada akacak.</p>
+					<p class="overlay-subtitle" id="overlaySubtitle">Hazır olduğunda gelen Kick chat mesajları burada
+						akacak.</p>
 				</div>
 				<div class="overlay-badges">
 					<div class="badge live" id="liveBadge"><span class="mini-dot"></span><span>OBS hazır</span></div>
@@ -1572,4 +1810,5 @@
 		bootstrap();
 	</script>
 </body>
+
 </html>
