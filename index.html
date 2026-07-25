@@ -633,6 +633,29 @@
 
 		.hidden { display: none !important; }
 
+
+		/* OBS Browser Source: /overlay?channel=kanal-adi&relay=wss%3A%2F%2Fornek.com */
+		body.obs-overlay { background: transparent; overflow: hidden; }
+		body.obs-overlay::before { display: none; }
+		body.obs-overlay .app { width: 100%; height: 100%; margin: 0; padding: 28px; display: block; }
+		body.obs-overlay .sidebar,
+		body.obs-overlay .overlay-top,
+		body.obs-overlay .footer { display: none; }
+		body.obs-overlay .overlay {
+			width: min(680px, 100%); height: 100%; min-height: 0; margin-left: 0;
+			background: transparent; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none;
+		}
+		body.obs-overlay .feed {
+			height: 100%; padding: 0; overflow: hidden; display: flex;
+			flex-direction: column; justify-content: flex-end;
+		}
+		body.obs-overlay .message {
+			flex: 0 0 auto; margin-bottom: 10px;
+			background: linear-gradient(135deg, rgba(8, 13, 23, 0.90), rgba(18, 27, 41, 0.84));
+			border-color: rgba(255,255,255,0.14); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+		}
+		body.obs-overlay .message.system { display: none; }
+
 		@keyframes enter {
 			from { transform: translateY(8px); opacity: 0; }
 			to { transform: translateY(0); opacity: 1; }
@@ -805,6 +828,7 @@
 		const PKCE_KEY = 'kick-chat-box-pkce-v1';
 		const AUTH_TOKEN_KEY = 'kick-chat-box-auth-token-v1';
 		const SUBSCRIPTION_KEY = 'kick-chat-box-subscription-v1';
+		const isObsOverlay = location.pathname === '/overlay';
 
 		const state = {
 			accessToken: '',
@@ -912,6 +936,16 @@
 			};
 		}
 
+
+		function applyOverlayUrlSettings() {
+			if (!isObsOverlay) return;
+			const params = new URLSearchParams(location.search);
+			const channel = params.get('channel')?.trim();
+			const relay = params.get('relay')?.trim();
+			if (channel) state.settings.channelSlug = channel;
+			if (relay) state.settings.relayUrl = relay;
+		}
+
 		function saveSettings() {
 			state.settings = {
 				clientId: els.clientId.value.trim(),
@@ -1011,6 +1045,7 @@
 		}
 
 		function appendSystemMessage(text) {
+			if (isObsOverlay) return;
 			const el = document.createElement('div');
 			el.className = 'message system';
 			el.innerHTML = `<div>${escapeHtml(text)}</div>`;
@@ -1422,6 +1457,7 @@
 		}
 
 		function bootstrap() {
+			applyOverlayUrlSettings();
 			const authState = loadAuthState();
 			if (authState?.accessToken) {
 				state.accessToken = authState.accessToken;
@@ -1434,10 +1470,15 @@
 			setRelayStatus('Bağlı değil', false);
 			setAuthStatus(state.accessToken ? 'OAuth bağlı' : 'Bekleniyor', !!state.accessToken);
 			setLastEvent('-');
-			appendSystemMessage('Önce Kick OAuth ile giriş yapın, sonra webhook relay’i bağlayın veya örnek payload ekleyin.');
-			handleOAuthCallback();
-			if (state.accessToken && !new URL(location.href).searchParams.get('code')) {
-				ensureKickSubscription();
+			if (isObsOverlay) {
+				document.body.classList.add('obs-overlay');
+				connectRelay();
+			} else {
+				appendSystemMessage('Önce Kick OAuth ile giriş yapın, sonra webhook relay’i bağlayın veya örnek payload ekleyin.');
+				handleOAuthCallback();
+				if (state.accessToken && !new URL(location.href).searchParams.get('code')) {
+					ensureKickSubscription();
+				}
 			}
 			if (state.settings.channelSlug) syncHeaderMeta();
 		}

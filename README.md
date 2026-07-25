@@ -9,7 +9,8 @@ Kick.com sohbet mesajlarını OBS içinde HTML overlay olarak göstermek için h
 
 Deploy aldıktan sonra şu adresler kullanılmalı:
 
-- Uygulama / OBS URL: `https://kickchatbox.onrender.com/`
+- Uygulama yönetim URL: `https://kickchatbox.onrender.com/`
+- OBS overlay URL: `https://kickchatbox.onrender.com/overlay?channel=teOry`
 - OAuth callback URL: `https://kickchatbox.onrender.com/auth/callback`
 - Webhook URL: `https://kickchatbox.onrender.com/webhook`
 - WebSocket Relay URL: `wss://kickchatbox.onrender.com`
@@ -55,7 +56,7 @@ Render loglarında artık public adresi görürsün. Örneğin:
 
 OBS içinde bir Browser Source ekle ve şu adresi ver:
 
-- `https://kickchatbox.onrender.com/`
+- `https://kickchatbox.onrender.com/overlay?channel=teOry`
 
 Arka plan zaten overlay görünümünde hazır. İstersen OBS içinde daha şeffaf ve kompakt gösterim için CSS'i sonra daraltabiliriz.
 

@@ -53,7 +53,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
+  if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/overlay')) {
     const html = await readFile(indexPath, 'utf8');
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
