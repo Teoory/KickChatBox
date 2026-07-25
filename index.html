@@ -1381,8 +1381,9 @@
 			const el = document.createElement('div');
 			el.className = 'message system';
 			el.innerHTML = `<div>${escapeHtml(text)}</div>`;
-			els.feed.prepend(el);
+			els.feed.append(el);
 			trimFeed();
+			els.feed.scrollTop = els.feed.scrollHeight;
 		}
 
 		function appendMessage(payload, options = {}) {
@@ -1408,16 +1409,36 @@
 				el.innerHTML = `<div class="avatar">${avatarContent}</div><div><div class="message-head"><div class="message-name"><span class="name-text" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="message-time">${escapeHtml(message.time)}</span></div><div class="message-time message-source">${isObsOverlay ? '' : escapeHtml(message.source)}</div></div><div class="message-content">${renderContent(message.content)}</div>${message.badges ? `<div class="badges">${message.badges}</div>` : ''}</div>`;
 			}
 
-			els.feed.prepend(el);
+			els.feed.append(el);
 			state.count += 1;
 			updateCounters();
 			setLastEvent(message.eventType || message.source || 'chat.message.sent');
 			trimFeed();
+			if (!isObsOverlay) {
+				els.feed.scrollTop = els.feed.scrollHeight;
+			}
 			scheduleMessageExpiry(el);
 		}
+
 		function trimFeed() {
 			while (els.feed.children.length > 40) {
-				els.feed.removeChild(els.feed.lastElementChild);
+				els.feed.removeChild(els.feed.firstElementChild);
+			}
+			if (isObsOverlay) {
+				const rect = els.feed.getBoundingClientRect();
+				if (rect.height > 0) {
+					while (els.feed.children.length > 0) {
+						const firstChild = els.feed.firstElementChild;
+						const childRect = firstChild.getBoundingClientRect();
+						if (childRect.bottom < rect.top) {
+							firstChild.remove();
+							state.count = Math.max(0, state.count - 1);
+							updateCounters();
+						} else {
+							break;
+						}
+					}
+				}
 			}
 		}
 
