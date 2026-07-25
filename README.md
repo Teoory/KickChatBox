@@ -68,7 +68,7 @@ Bu uygulamanın Kick mesajlarını göstermesi için sadece web sayfası yetmez.
 3. Aynı sunucu WebSocket ile overlay sayfasına mesajı aktarır.
 4. Overlay sayfası mesajı HTML olarak çizilir.
 
-Ek olarak, Kick tarafında event subscription oluşturulmuş olmalı. Bu uygulama OAuth tamamlandıktan sonra `chat.message.sent` için subscription oluşturmaya çalışır. Subscription oluşmazsa overlay `0 mesaj işlendi` olarak kalır.
+Ek olarak, Kick tarafında event subscription oluşturulmuş olmalı. Bu uygulama OAuth tamamlandıktan sonra `chat.message.sent` için subscription oluşturmaya çalışır. Kick swagger şemasına göre gönderilen gövde şuna benzer: `{"method":"webhook","events":[{"name":"chat.message.sent","version":1}]}`. `webhook_url` veya `user_id` gibi alanlar eklenirse istek 400 dönebilir. Subscription oluşmazsa overlay `0 mesaj işlendi` olarak kalır.
 
 Bağlantı kurulmadı görünüyorsa en yaygın nedenler:
 
