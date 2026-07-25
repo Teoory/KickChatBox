@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = Number.parseInt(process.env.PORT || '8787', 10);
 const indexPath = path.join(__dirname, 'index.html');
+const publicBaseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
 
 const clients = new Set();
 
@@ -130,7 +131,11 @@ wss.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Kick Chat Box running at http://localhost:${PORT}`);
-  console.log(`Webhook endpoint: http://localhost:${PORT}/webhook`);
-  console.log(`WebSocket relay: ws://localhost:${PORT}`);
+  const websocketUrl = publicBaseUrl.startsWith('https://')
+    ? publicBaseUrl.replace('https://', 'wss://')
+    : publicBaseUrl.replace('http://', 'ws://');
+
+  console.log(`Kick Chat Box running at ${publicBaseUrl}`);
+  console.log(`Webhook endpoint: ${publicBaseUrl}/webhook`);
+  console.log(`WebSocket relay: ${websocketUrl}`);
 });

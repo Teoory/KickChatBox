@@ -861,13 +861,25 @@
 		}
 
 		function defaultSettings() {
+			const runtime = runtimeDefaults();
 			return {
 				clientId: '',
 				clientSecret: '',
-				redirectUri: 'http://localhost:8787/',
+				redirectUri: runtime.redirectUri,
 				channelSlug: 'kanal-adi',
-				relayUrl: 'ws://localhost:8787',
+				relayUrl: runtime.relayUrl,
 				scope: 'events:subscribe channel:read',
+			};
+		}
+
+		function runtimeDefaults() {
+			const protocol = location.protocol === 'https:' ? 'https:' : 'http:';
+			const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+			const baseUrl = `${protocol}//${location.host}/`;
+
+			return {
+				redirectUri: baseUrl,
+				relayUrl: `${wsProtocol}//${location.host}`,
 			};
 		}
 
@@ -894,6 +906,7 @@
 		}
 
 		function syncHeaderMeta() {
+			const runtime = runtimeDefaults();
 			const channel = state.settings.channelSlug || 'Kanal';
 			els.channelName.textContent = channel;
 			els.overlayTitle.textContent = channel || 'Kick Chat Box';
@@ -901,6 +914,7 @@
 				? `${channel} kanalından gelen mesajlar burada görünecek.`
 				: 'Hazır olduğunda gelen Kick chat mesajları burada akacak.';
 			els.channelAvatar.textContent = (channel || 'K').slice(0, 1).toUpperCase();
+			document.getElementById('notes').value = `Kick webhooks public bir URL ister. Bu tek HTML dosyası, canlı mesajları göstermek için bir WebSocket relay bekler.\n\nBu ortam için önerilen değerler:\n- Redirect URI: ${runtime.redirectUri}\n- WebSocket Relay URL: ${runtime.relayUrl}\n- Webhook URL: ${runtime.redirectUri}webhook\n\nRelay, Kick webhook payload'larını alıp bu sayfaya aktarmalıdır.`;
 		}
 
 		function setAuthStatus(text, connected = false) {
