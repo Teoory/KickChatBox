@@ -63,6 +63,46 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.method === 'GET' && url.pathname === '/auth/callback') {
+    const html = await readFile(indexPath, 'utf8');
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    });
+    res.end(html);
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/webhook') {
+    const html = `<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kick Webhook Endpoint</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0b0d12; color: #eef2ff; display: grid; min-height: 100vh; place-items: center; }
+    .card { max-width: 760px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; background: rgba(255,255,255,0.04); }
+    h1 { margin-top: 0; }
+    code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Webhook endpoint aktif</h1>
+    <p>Bu adres POST istekleri bekler: <code>/webhook</code>.</p>
+    <p>Kick panelinde webhook URL olarak <code>${publicBaseUrl}/webhook</code> kullan.</p>
+  </div>
+</body>
+</html>`;
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    });
+    res.end(html);
+    return;
+  }
+
   if (req.method === 'GET' && url.pathname === '/health') {
     sendJson(res, 200, {
       ok: true,

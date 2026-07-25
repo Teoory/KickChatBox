@@ -851,7 +851,13 @@
 				const raw = localStorage.getItem(STORAGE_KEY);
 				if (!raw) return defaultSettings();
 				const parsed = { ...defaultSettings(), ...JSON.parse(raw) };
-				if (!parsed.redirectUri || String(parsed.redirectUri).startsWith('file:') || String(parsed.redirectUri).startsWith('null')) {
+				if (
+					!parsed.redirectUri ||
+					String(parsed.redirectUri).startsWith('file:') ||
+					String(parsed.redirectUri).startsWith('null') ||
+					String(parsed.redirectUri) === `${location.origin}/` ||
+					String(parsed.redirectUri) === location.origin
+				) {
 					parsed.redirectUri = defaultSettings().redirectUri;
 				}
 				return parsed;
@@ -875,10 +881,10 @@
 		function runtimeDefaults() {
 			const protocol = location.protocol === 'https:' ? 'https:' : 'http:';
 			const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-			const baseUrl = `${protocol}//${location.host}/`;
+			const baseUrl = `${protocol}//${location.host}`;
 
 			return {
-				redirectUri: baseUrl,
+				redirectUri: `${baseUrl}/auth/callback`,
 				relayUrl: `${wsProtocol}//${location.host}`,
 			};
 		}
