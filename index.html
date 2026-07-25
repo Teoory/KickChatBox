@@ -664,7 +664,7 @@
 		body.obs-overlay.obs-minimal .overlay { width: min(900px, 100%); }
 		body.obs-overlay.obs-minimal .minimal-message { display: block; padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 10px; }
 		body.obs-overlay.obs-minimal .minimal-line { padding: 5px 0; color: #fff; font-size: 22px; line-height: 1.35; text-shadow: 0 2px 5px rgba(0,0,0,.75); }
-		body.obs-overlay.obs-minimal .minimal-name { font-weight: 700; margin-right: 8px; }
+		body.obs-overlay.obs-minimal .minimal-name { font-weight: 700; margin-right: 14px; }
 		body.obs-overlay.obs-minimal .minimal-content { font-weight: 500; }
 		body.obs-overlay.obs-social .overlay { width: min(560px, 100%); }
 		body.obs-overlay.obs-social .social-message { display: block; width: min(100%, 520px); padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 16px; }
@@ -1103,7 +1103,7 @@
 		}
 
 		function isPrivilegedUser(badges = []) {
-			return badges.some((badge) => ['broadcaster', 'moderator'].includes(String(badge.type || '').toLowerCase()));
+			return badges.some((badge) => ['broadcaster', 'moderator', 'vip', 'og', 'subscriber'].includes(String(badge.type || badge.text || '').toLowerCase()));
 		}
 
 		function scheduleMessageExpiry(el) {
@@ -1545,7 +1545,7 @@
 			setAuthStatus(state.accessToken ? 'OAuth bağlı' : 'Bekleniyor', !!state.accessToken);
 			setLastEvent('-');
 			if (isObsOverlay) {
-				document.body.classList.add('obs-overlay', `obs-`);
+				document.body.classList.add('obs-overlay', 'obs-' + state.overlayMode);
 				connectRelay();
 			} else {
 				appendSystemMessage('Önce Kick OAuth ile giriş yapın, sonra webhook relay’i bağlayın veya örnek payload ekleyin.');
