@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="tr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="color-scheme" content="dark">
+	<title>Kick Chat Box</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+		:root {
+			--bg: #0b0d12;
+			--panel: rgba(17, 20, 28, 0.86);
+			--panel-strong: rgba(22, 26, 36, 0.96);
+			--panel-soft: rgba(255, 255, 255, 0.04);
+			--border: rgba(255, 255, 255, 0.09);
+			--border-strong: rgba(255, 255, 255, 0.16);
+			--text: #eef2ff;
+			--muted: #9aa6bb;
+			--accent: #7df0d0;
+			--accent-strong: #38bdf8;
+			--warn: #ffcc66;
+			--danger: #ff6b6b;
+			--shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+			--radius-xl: 24px;
+			--radius-lg: 18px;
+			--radius-md: 14px;
+			--radius-sm: 10px;
+			--mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			--sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+		}
+
+		* { box-sizing: border-box; }
+		html, body { height: 100%; }
+		body {
+			margin: 0;
+			color: var(--text);
+			font-family: var(--sans);
+			background:
+				radial-gradient(circle at top left, rgba(125, 240, 208, 0.16), transparent 34%),
+				radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 30%),
+				radial-gradient(circle at bottom left, rgba(255, 107, 107, 0.08), transparent 28%),
+				linear-gradient(180deg, #07090e 0%, #0b0d12 54%, #090b10 100%);
+			overflow: hidden;
+		}
+
+		body::before {
+			content: '';
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			background-image:
+				linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+			background-size: 60px 60px;
+			mask-image: linear-gradient(180deg, rgba(0,0,0,0.72), transparent 95%);
+			opacity: 0.35;
+		}
+
+		.app {
+			position: relative;
+			width: min(1280px, 100vw);
+			height: 100vh;
+			margin: 0 auto;
+			padding: 20px;
+			display: grid;
+			grid-template-columns: minmax(360px, 470px) minmax(0, 1fr);
+			gap: 18px;
+		}
+
+		.panel {
+			background: var(--panel);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-xl);
+			box-shadow: var(--shadow);
+			backdrop-filter: blur(18px);
+			min-width: 0;
+		}
+
+		.sidebar {
+			display: grid;
+			grid-template-rows: auto auto 1fr;
+			overflow: hidden;
+		}
+
+		.hero {
+			padding: 22px 22px 18px;
+			border-bottom: 1px solid var(--border);
+			background:
+				linear-gradient(135deg, rgba(125, 240, 208, 0.08), transparent 42%),
+				linear-gradient(225deg, rgba(56, 189, 248, 0.08), transparent 34%);
+		}
+
+		.eyebrow {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 10px;
+			border: 1px solid rgba(125, 240, 208, 0.26);
+			background: rgba(125, 240, 208, 0.08);
+			color: var(--accent);
+			border-radius: 999px;
+			font-size: 12px;
+			letter-spacing: 0.02em;
+			margin-bottom: 16px;
+		}
+
+		.eyebrow .dot {
+			width: 7px;
+			height: 7px;
+			border-radius: 999px;
+			background: var(--accent);
+			box-shadow: 0 0 14px var(--accent);
+		}
+
+		h1, h2, h3, p {
+			margin: 0;
+		}
+
+		.title-row {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 16px;
+		}
+
+		.title {
+			font-size: 32px;
+			line-height: 1;
+			letter-spacing: -0.04em;
+			margin-bottom: 8px;
+		}
+
+		.subtitle {
+			color: var(--muted);
+			font-size: 14px;
+			line-height: 1.5;
+			max-width: 34ch;
+		}
+
+		.status-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 14px;
+			border-radius: 999px;
+			border: 1px solid var(--border);
+			background: rgba(255, 255, 255, 0.03);
+			color: var(--muted);
+			font-size: 12px;
+			white-space: nowrap;
+		}
+
+		.status-pill .status-dot {
+			width: 9px;
+			height: 9px;
+			border-radius: 999px;
+			background: #64748b;
+			box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.14);
+		}
+
+		.status-pill.connected {
+			color: #dcfce7;
+			border-color: rgba(125, 240, 208, 0.24);
+			background: rgba(125, 240, 208, 0.08);
+		}
+
+		.status-pill.connected .status-dot {
+			background: var(--accent);
+			box-shadow: 0 0 0 3px rgba(125, 240, 208, 0.18);
+		}
+
+		.meta-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 12px;
+			padding: 18px 22px;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.meta-card {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-md);
+			background: var(--panel-soft);
+			padding: 14px 16px;
+		}
+
+		.meta-label {
+			color: var(--muted);
+			font-size: 12px;
+			margin-bottom: 8px;
+		}
+
+		.meta-value {
+			font-size: 15px;
+			font-weight: 600;
+			letter-spacing: -0.02em;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			min-width: 0;
+		}
+
+		.avatar {
+			width: 32px;
+			height: 32px;
+			border-radius: 12px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(125, 240, 208, 0.18), rgba(56, 189, 248, 0.18));
+			color: var(--text);
+			font-size: 13px;
+			font-weight: 700;
+			flex: 0 0 auto;
+			overflow: hidden;
+		}
+
+		.avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.scroll-area {
+			overflow: auto;
+			padding: 18px 18px 20px;
+		}
+
+		.scroll-area::-webkit-scrollbar { width: 10px; }
+		.scroll-area::-webkit-scrollbar-thumb {
+			background: rgba(255,255,255,0.14);
+			border: 2px solid transparent;
+			background-clip: content-box;
+			border-radius: 999px;
+		}
+
+		.section {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			background: rgba(255, 255, 255, 0.03);
+			overflow: hidden;
+			margin-bottom: 14px;
+		}
+
+		.section-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 14px 16px;
+			border-bottom: 1px solid var(--border);
+			background: rgba(255,255,255,0.02);
+		}
+
+		.section-title {
+			font-size: 14px;
+			letter-spacing: -0.02em;
+			font-weight: 700;
+		}
+
+		.section-note {
+			color: var(--muted);
+			font-size: 12px;
+			line-height: 1.45;
+		}
+
+		.grid-form {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 12px;
+			padding: 16px;
+		}
+
+		.grid-form .wide {
+			grid-column: 1 / -1;
+		}
+
+		label {
+			display: block;
+			color: var(--muted);
+			font-size: 12px;
+			margin-bottom: 8px;
+		}
+
+		input, textarea, select {
+			width: 100%;
+			border: 1px solid rgba(255,255,255,0.12);
+			border-radius: 12px;
+			background: rgba(8, 10, 15, 0.86);
+			color: var(--text);
+			padding: 13px 14px;
+			outline: none;
+			font: inherit;
+			box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+		}
+
+		textarea {
+			resize: vertical;
+			min-height: 100px;
+			font-family: var(--mono);
+			font-size: 12px;
+			line-height: 1.55;
+		}
+
+		input::placeholder, textarea::placeholder {
+			color: #6f7b8d;
+		}
+
+		input:focus, textarea:focus, select:focus {
+			border-color: rgba(125, 240, 208, 0.6);
+			box-shadow: 0 0 0 4px rgba(125, 240, 208, 0.12);
+		}
+
+		.field-row {
+			display: flex;
+			gap: 10px;
+			align-items: flex-end;
+		}
+
+		.field-row > div { flex: 1; min-width: 0; }
+
+		.btn-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			padding: 0 16px 16px;
+		}
+
+		button {
+			appearance: none;
+			border: 0;
+			cursor: pointer;
+			font: inherit;
+			font-weight: 700;
+			border-radius: 12px;
+			padding: 12px 16px;
+			color: var(--text);
+			background: rgba(255,255,255,0.08);
+			transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+		}
+
+		button:hover {
+			background: rgba(255,255,255,0.13);
+			transform: translateY(-1px);
+		}
+
+		button.primary {
+			background: linear-gradient(135deg, rgba(125, 240, 208, 0.95), rgba(56, 189, 248, 0.95));
+			color: #041017;
+			box-shadow: 0 12px 30px rgba(56, 189, 248, 0.2);
+		}
+
+		button.primary:hover {
+			background: linear-gradient(135deg, rgba(125, 240, 208, 1), rgba(56, 189, 248, 1));
+		}
+
+		button.ghost {
+			background: rgba(255,255,255,0.04);
+			border: 1px solid var(--border);
+		}
+
+		button.danger {
+			background: rgba(255, 107, 107, 0.12);
+			color: #ffd5d5;
+			border: 1px solid rgba(255, 107, 107, 0.22);
+		}
+
+		.chip-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			padding: 0 16px 16px;
+		}
+
+		.chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 10px;
+			border-radius: 999px;
+			border: 1px solid var(--border);
+			background: rgba(255,255,255,0.03);
+			color: var(--muted);
+			font-size: 12px;
+		}
+
+		.chip strong {
+			color: var(--text);
+			font-weight: 600;
+		}
+
+		.checks {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 10px 12px;
+			padding: 0 16px 16px;
+		}
+
+		.check {
+			display: flex;
+			gap: 10px;
+			align-items: flex-start;
+			padding: 11px 12px;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			background: rgba(255,255,255,0.03);
+			font-size: 13px;
+			line-height: 1.45;
+			color: var(--text);
+		}
+
+		.check input {
+			width: 16px;
+			height: 16px;
+			margin-top: 2px;
+			padding: 0;
+			accent-color: var(--accent);
+			box-shadow: none;
+			flex: 0 0 auto;
+		}
+
+		.check span {
+			color: var(--muted);
+		}
+
+		.overlay {
+			display: grid;
+			grid-template-rows: auto 1fr auto;
+			overflow: hidden;
+		}
+
+		.overlay-top {
+			padding: 18px 20px;
+			border-bottom: 1px solid var(--border);
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 16px;
+			background:
+				linear-gradient(135deg, rgba(125, 240, 208, 0.06), transparent 28%),
+				linear-gradient(225deg, rgba(56, 189, 248, 0.08), transparent 28%);
+		}
+
+		.overlay-title {
+			font-size: 26px;
+			line-height: 1;
+			letter-spacing: -0.04em;
+			margin-bottom: 6px;
+		}
+
+		.overlay-subtitle {
+			color: var(--muted);
+			font-size: 13px;
+			line-height: 1.45;
+		}
+
+		.overlay-badges {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+			justify-content: flex-end;
+			align-items: flex-start;
+		}
+
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 12px;
+			border-radius: 999px;
+			background: rgba(255,255,255,0.04);
+			border: 1px solid var(--border);
+			color: var(--muted);
+			font-size: 12px;
+		}
+
+		.badge .mini-dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 999px;
+			background: #64748b;
+		}
+
+		.badge.live .mini-dot { background: var(--accent); }
+		.badge.warn .mini-dot { background: var(--warn); }
+
+		.feed {
+			overflow: auto;
+			padding: 16px;
+		}
+
+		.feed::-webkit-scrollbar { width: 10px; }
+		.feed::-webkit-scrollbar-thumb {
+			background: rgba(255,255,255,0.14);
+			border: 2px solid transparent;
+			background-clip: content-box;
+			border-radius: 999px;
+		}
+
+		.message {
+			display: grid;
+			grid-template-columns: 40px minmax(0, 1fr);
+			gap: 12px;
+			padding: 14px 14px 14px 12px;
+			margin-bottom: 12px;
+			border: 1px solid rgba(255,255,255,0.08);
+			border-radius: 18px;
+			background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+			animation: enter 220ms ease-out;
+		}
+
+		.message.system {
+			grid-template-columns: 1fr;
+			color: var(--muted);
+			background: rgba(255,255,255,0.03);
+			border-style: dashed;
+			padding: 12px 14px;
+		}
+
+		.message-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 6px;
+		}
+
+		.message-name {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			min-width: 0;
+			font-size: 15px;
+			font-weight: 700;
+		}
+
+		.message-name .name-text {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.badges {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			margin-top: 8px;
+		}
+
+		.tag {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 4px 8px;
+			border-radius: 999px;
+			background: rgba(125, 240, 208, 0.08);
+			color: #dcfff7;
+			font-size: 11px;
+			border: 1px solid rgba(125, 240, 208, 0.18);
+		}
+
+		.tag[data-tone='blue'] {
+			background: rgba(56, 189, 248, 0.08);
+			border-color: rgba(56, 189, 248, 0.18);
+			color: #d8f1ff;
+		}
+
+		.tag[data-tone='gold'] {
+			background: rgba(255, 204, 102, 0.08);
+			border-color: rgba(255, 204, 102, 0.18);
+			color: #fff3cc;
+		}
+
+		.message-time {
+			color: var(--muted);
+			font-size: 12px;
+			white-space: nowrap;
+			font-family: var(--mono);
+		}
+
+		.message-content {
+			color: #e8edf8;
+			font-size: 15px;
+			line-height: 1.5;
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		.message-content .mention {
+			color: var(--accent);
+			font-weight: 700;
+		}
+
+		.message-content .emote {
+			display: inline-flex;
+			align-items: center;
+			padding: 1px 6px;
+			margin: 0 2px;
+			border-radius: 8px;
+			background: rgba(255,255,255,0.08);
+			border: 1px solid rgba(255,255,255,0.08);
+			color: #fff;
+			font-size: 12px;
+			font-family: var(--mono);
+		}
+
+		.footer {
+			padding: 14px 20px 18px;
+			border-top: 1px solid var(--border);
+			display: flex;
+			justify-content: space-between;
+			gap: 14px;
+			align-items: center;
+			color: var(--muted);
+			font-size: 12px;
+			background: rgba(255,255,255,0.02);
+		}
+
+		.footer .mono {
+			font-family: var(--mono);
+		}
+
+		.hint {
+			margin: 0 16px 16px;
+			padding: 14px 14px 14px 16px;
+			border-left: 3px solid var(--warn);
+			background: rgba(255, 204, 102, 0.08);
+			color: #f6e7be;
+			border-radius: 12px;
+			font-size: 12px;
+			line-height: 1.55;
+		}
+
+		.hidden { display: none !important; }
+
+		@keyframes enter {
+			from { transform: translateY(8px); opacity: 0; }
+			to { transform: translateY(0); opacity: 1; }
+		}
+
+		@media (max-width: 1120px) {
+			body { overflow: auto; }
+			.app {
+				height: auto;
+				min-height: 100vh;
+				grid-template-columns: 1fr;
+			}
+			.overlay { min-height: 760px; }
+		}
+
+		@media (max-width: 760px) {
+			.app { padding: 12px; gap: 12px; }
+			.meta-grid, .grid-form, .checks { grid-template-columns: 1fr; }
+			.title { font-size: 26px; }
+			.overlay-top { flex-direction: column; }
+			.overlay-badges { justify-content: flex-start; }
+			.field-row { flex-direction: column; align-items: stretch; }
+		}
+	</style>
+</head>
+<body>
+	<div class="app">
+		<aside class="panel sidebar">
+			<div class="hero">
+				<div class="eyebrow"><span class="dot"></span> Kick OBS Overlay</div>
+				<div class="title-row">
+					<div>
+						<h1 class="title">Uygulamanız</h1>
+						<p class="subtitle">Kick OAuth PKCE ile oturum açar, webhook relay üzerinden gelen chat mesajlarını işler ve OBS için okunabilir bir HTML katmanı üretir.</p>
+					</div>
+					<div id="authStatus" class="status-pill">
+						<span class="status-dot"></span>
+						<span>Hazır değil</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="meta-grid">
+				<div class="meta-card">
+					<div class="meta-label">Bağlı kanal</div>
+					<div class="meta-value" id="channelBadge">
+						<span class="avatar" id="channelAvatar">K</span>
+						<span id="channelName">-</span>
+					</div>
+				</div>
+				<div class="meta-card">
+					<div class="meta-label">Canlı mesajlar</div>
+					<div class="meta-value">
+						<span class="avatar">#</span>
+						<span id="messageCount">0 mesaj</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="scroll-area">
+				<section class="section">
+					<div class="section-header">
+						<div>
+							<div class="section-title">OAuth / Kick App Ayarları</div>
+							<div class="section-note">Kick uygulamanızın Client ID’sini girin. Static HTML içinde client secret güvenli değildir; gerekirse backend’e taşıyın.</div>
+						</div>
+						<button id="fillDemo" class="ghost" type="button">Örnek doldur</button>
+					</div>
+
+					<div class="grid-form">
+						<div class="wide">
+							<label for="clientId">İstemci Kimliği (Client ID)</label>
+							<input id="clientId" autocomplete="off" placeholder="Kick developer panelindeki Client ID">
+						</div>
+						<div>
+							<label for="clientSecret">İstemci Parolası (Client Secret)</label>
+							<input id="clientSecret" type="password" autocomplete="off" placeholder="Yalnızca test için">
+						</div>
+						<div>
+							<label for="redirectUri">Yönlendirme URI</label>
+							  <input id="redirectUri" autocomplete="off" placeholder="http://localhost:8787/">
+						</div>
+						<div>
+							<label for="channelSlug">Kanal Slug</label>
+							<input id="channelSlug" autocomplete="off" placeholder="kanal-adi">
+						</div>
+						<div>
+							<label for="relayUrl">WebSocket Relay URL</label>
+							<input id="relayUrl" autocomplete="off" placeholder="ws://localhost:8787">
+						</div>
+						<div>
+							<label for="scope">Scope</label>
+							<input id="scope" autocomplete="off" placeholder="events:subscribe channel:read" value="events:subscribe channel:read">
+						</div>
+						<div class="wide">
+							<label for="notes">Not</label>
+							<textarea id="notes" readonly>Kick webhooks public bir URL ister. Bu tek HTML dosyası, canlı mesajları göstermek için bir WebSocket relay bekler. Relay, Kick webhook payload'larını alıp bu sayfaya aktarmalıdır.</textarea>
+						</div>
+					</div>
+
+					<div class="btn-row">
+						<button id="loginBtn" class="primary" type="button">Kick ile giriş yap</button>
+						<button id="connectRelayBtn" class="ghost" type="button">Relay bağla</button>
+						<button id="disconnectBtn" class="danger" type="button">Bağlantıları kes</button>
+					</div>
+				</section>
+
+				<section class="section">
+					<div class="section-header">
+						<div>
+							<div class="section-title">Canlı Durum</div>
+							<div class="section-note">Yetkilendirme, relay durumu ve en son alınan mesajlar burada görünür.</div>
+						</div>
+					</div>
+					<div class="chip-row">
+						<div class="chip"><strong>OAuth</strong> <span id="oauthSummary">Bekleniyor</span></div>
+						<div class="chip"><strong>Relay</strong> <span id="relaySummary">Bağlı değil</span></div>
+						<div class="chip"><strong>Son olay</strong> <span id="lastEventSummary">-</span></div>
+					</div>
+					<div class="hint">
+						Kick tarafında <strong>chat.message.sent</strong> event’i webhook olarak gelir. Bu sayfayı OBS’de doğrudan gösterebilirsiniz, fakat mesajları almak için webhook’u public bir relay’e bağlamanız gerekir. Relay mesajları WebSocket ile buraya iletmeli.
+					</div>
+				</section>
+
+				<section class="section">
+					<div class="section-header">
+						<div>
+							<div class="section-title">Test Mesajı</div>
+							<div class="section-note">Relay olmadan da tasarımı denemek için örnek webhook payload’ı ekleyin.</div>
+						</div>
+					</div>
+					<div class="grid-form" style="padding-top: 0;">
+						<div class="wide">
+							<label for="manualPayload">Webhook JSON</label>
+							<textarea id="manualPayload" placeholder='{"message_id":"1","content":"Merhaba chat!","sender":{"username":"teObot","identity":{"username_color":"#7df0d0","badges":[{"text":"Bot","type":"bot"}]},"profile_picture":""},"created_at":"2026-07-25T10:00:00Z","eventType":"chat.message.sent"}'></textarea>
+						</div>
+					</div>
+					<div class="btn-row">
+						<button id="injectBtn" class="ghost" type="button">Mesajı ekle</button>
+						<button id="sampleBtn" class="ghost" type="button">Örnek payload yükle</button>
+						<button id="clearBtn" class="danger" type="button">Sohbeti temizle</button>
+					</div>
+				</section>
+			</div>
+		</aside>
+
+		<main class="panel overlay">
+			<div class="overlay-top">
+				<div>
+					<h2 class="overlay-title" id="overlayTitle">teObot</h2>
+					<p class="overlay-subtitle" id="overlaySubtitle">Hazır olduğunda gelen Kick chat mesajları burada akacak.</p>
+				</div>
+				<div class="overlay-badges">
+					<div class="badge live" id="liveBadge"><span class="mini-dot"></span><span>OBS hazır</span></div>
+					<div class="badge warn"><span class="mini-dot"></span><span>Webhook relay gerekli</span></div>
+				</div>
+			</div>
+
+			<div class="feed" id="feed"></div>
+
+			<div class="footer">
+				<div class="mono" id="footerLeft">0 mesaj işlendi</div>
+				<div id="footerRight">Kick Chat Box</div>
+			</div>
+		</main>
+	</div>
+
+	<script>
+		const STORAGE_KEY = 'kick-chat-box-settings-v1';
+		const PKCE_KEY = 'kick-chat-box-pkce-v1';
+
+		const state = {
+			accessToken: '',
+			refreshToken: '',
+			relay: null,
+			relayConnected: false,
+			count: 0,
+			lastEvent: '-',
+			settings: loadSettings(),
+		};
+
+		const els = {
+			authStatus: document.getElementById('authStatus'),
+			channelBadge: document.getElementById('channelBadge'),
+			channelAvatar: document.getElementById('channelAvatar'),
+			channelName: document.getElementById('channelName'),
+			messageCount: document.getElementById('messageCount'),
+			clientId: document.getElementById('clientId'),
+			clientSecret: document.getElementById('clientSecret'),
+			redirectUri: document.getElementById('redirectUri'),
+			channelSlug: document.getElementById('channelSlug'),
+			relayUrl: document.getElementById('relayUrl'),
+			scope: document.getElementById('scope'),
+			notes: document.getElementById('notes'),
+			loginBtn: document.getElementById('loginBtn'),
+			connectRelayBtn: document.getElementById('connectRelayBtn'),
+			disconnectBtn: document.getElementById('disconnectBtn'),
+			oauthSummary: document.getElementById('oauthSummary'),
+			relaySummary: document.getElementById('relaySummary'),
+			lastEventSummary: document.getElementById('lastEventSummary'),
+			manualPayload: document.getElementById('manualPayload'),
+			injectBtn: document.getElementById('injectBtn'),
+			sampleBtn: document.getElementById('sampleBtn'),
+			clearBtn: document.getElementById('clearBtn'),
+			fillDemo: document.getElementById('fillDemo'),
+			overlayTitle: document.getElementById('overlayTitle'),
+			overlaySubtitle: document.getElementById('overlaySubtitle'),
+			liveBadge: document.getElementById('liveBadge'),
+			feed: document.getElementById('feed'),
+			footerLeft: document.getElementById('footerLeft'),
+			footerRight: document.getElementById('footerRight'),
+		};
+
+		function loadSettings() {
+			try {
+				const raw = localStorage.getItem(STORAGE_KEY);
+				if (!raw) return defaultSettings();
+				const parsed = { ...defaultSettings(), ...JSON.parse(raw) };
+				if (!parsed.redirectUri || String(parsed.redirectUri).startsWith('file:') || String(parsed.redirectUri).startsWith('null')) {
+					parsed.redirectUri = defaultSettings().redirectUri;
+				}
+				return parsed;
+			} catch {
+				return defaultSettings();
+			}
+		}
+
+		function defaultSettings() {
+			return {
+				clientId: '',
+				clientSecret: '',
+				redirectUri: 'http://localhost:8787/',
+				channelSlug: 'kanal-adi',
+				relayUrl: 'ws://localhost:8787',
+				scope: 'events:subscribe channel:read',
+			};
+		}
+
+		function saveSettings() {
+			state.settings = {
+				clientId: els.clientId.value.trim(),
+				clientSecret: els.clientSecret.value,
+				redirectUri: els.redirectUri.value.trim(),
+				channelSlug: els.channelSlug.value.trim(),
+				relayUrl: els.relayUrl.value.trim(),
+				scope: els.scope.value.trim(),
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings));
+			syncHeaderMeta();
+		}
+
+		function syncForm() {
+			els.clientId.value = state.settings.clientId || '';
+			els.clientSecret.value = state.settings.clientSecret || '';
+			els.redirectUri.value = state.settings.redirectUri || defaultSettings().redirectUri;
+			els.channelSlug.value = state.settings.channelSlug || '';
+			els.relayUrl.value = state.settings.relayUrl || '';
+			els.scope.value = state.settings.scope || 'events:subscribe channel:read';
+		}
+
+		function syncHeaderMeta() {
+			const channel = state.settings.channelSlug || 'Kanal';
+			els.channelName.textContent = channel;
+			els.overlayTitle.textContent = channel || 'Kick Chat Box';
+			els.overlaySubtitle.textContent = channel
+				? `${channel} kanalından gelen mesajlar burada görünecek.`
+				: 'Hazır olduğunda gelen Kick chat mesajları burada akacak.';
+			els.channelAvatar.textContent = (channel || 'K').slice(0, 1).toUpperCase();
+		}
+
+		function setAuthStatus(text, connected = false) {
+			els.authStatus.classList.toggle('connected', connected);
+			els.authStatus.lastElementChild.textContent = text;
+			els.oauthSummary.textContent = text;
+		}
+
+		function setRelayStatus(text, connected = false) {
+			els.relaySummary.textContent = text;
+			els.liveBadge.classList.toggle('live', connected);
+		}
+
+		function setLastEvent(text) {
+			state.lastEvent = text;
+			els.lastEventSummary.textContent = text;
+			els.footerRight.textContent = text;
+		}
+
+		function updateCounters() {
+			els.messageCount.textContent = `${state.count} mesaj`;
+			els.footerLeft.textContent = `${state.count} mesaj işlendi`;
+		}
+
+		function escapeHtml(value) {
+			return String(value)
+				.replaceAll('&', '&amp;')
+				.replaceAll('<', '&lt;')
+				.replaceAll('>', '&gt;')
+				.replaceAll('"', '&quot;')
+				.replaceAll("'", '&#39;');
+		}
+
+		function formatTime(input) {
+			const date = input ? new Date(input) : new Date();
+			if (Number.isNaN(date.getTime())) return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+			return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+		}
+
+		function initials(value) {
+			return String(value || '?')
+				.trim()
+				.slice(0, 2)
+				.toUpperCase();
+		}
+
+		function renderBadges(badges = []) {
+			if (!Array.isArray(badges) || badges.length === 0) return '';
+			return badges.map((badge) => {
+				const type = String(badge.type || '').toLowerCase();
+				let tone = 'blue';
+				if (type.includes('subscriber') || type.includes('vip')) tone = 'gold';
+				if (type.includes('moderator')) tone = 'blue';
+				if (type.includes('bot')) tone = 'gold';
+				const count = badge.count != null ? ` · ${badge.count}` : '';
+				return `<span class="tag" data-tone="${tone}">${escapeHtml(badge.text || badge.type || 'badge')}${escapeHtml(count)}</span>`;
+			}).join('');
+		}
+
+		function renderContent(content) {
+			const safe = escapeHtml(content || '');
+			return safe
+				.replace(/(@[a-zA-Z0-9_]+)/g, '<span class="mention">$1</span>')
+				.replace(/\[emote:([^\]]+)\]/g, '<span class="emote">emote:$1</span>');
+		}
+
+		function appendSystemMessage(text) {
+			const el = document.createElement('div');
+			el.className = 'message system';
+			el.innerHTML = `<div>${escapeHtml(text)}</div>`;
+			els.feed.prepend(el);
+			trimFeed();
+		}
+
+		function appendMessage(payload, options = {}) {
+			const message = normalizePayload(payload, options);
+			if (!message) return;
+
+			const el = document.createElement('article');
+			el.className = 'message';
+
+			const avatarContent = message.avatar
+				? `<img src="${escapeHtml(message.avatar)}" alt="${escapeHtml(message.username)} avatar" referrerpolicy="no-referrer">`
+				: escapeHtml(initials(message.username));
+
+			el.innerHTML = `
+				<div class="avatar">${avatarContent}</div>
+				<div>
+					<div class="message-head">
+						<div class="message-name">
+							<span class="name-text" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span>
+							<span class="message-time">${escapeHtml(message.time)}</span>
+						</div>
+						<div class="message-time">${escapeHtml(message.source)}</div>
+					</div>
+					<div class="message-content">${renderContent(message.content)}</div>
+					${message.badges ? `<div class="badges">${message.badges}</div>` : ''}
+				</div>
+			`;
+
+			els.feed.prepend(el);
+			state.count += 1;
+			updateCounters();
+			setLastEvent(message.eventType || message.source || 'chat.message.sent');
+			trimFeed();
+		}
+
+		function trimFeed() {
+			while (els.feed.children.length > 40) {
+				els.feed.removeChild(els.feed.lastElementChild);
+			}
+		}
+
+		function normalizePayload(payload, options = {}) {
+			if (payload == null) return null;
+			if (typeof payload === 'string') {
+				try {
+					payload = JSON.parse(payload);
+				} catch {
+					payload = { content: payload };
+				}
+			}
+
+			if (payload && typeof payload === 'object') {
+				if (payload.payload && typeof payload.payload === 'object') {
+					payload = payload.payload;
+				} else if (payload.data && typeof payload.data === 'object' && !payload.content) {
+					payload = payload.data;
+				}
+			}
+
+			const eventType = payload.eventType || payload.event_type || payload.type || payload['Kick-Event-Type'] || options.eventType || 'chat.message.sent';
+			const sender = payload.sender || payload.user || payload.author || {};
+			const identity = sender.identity || {};
+			const badges = renderBadges(identity.badges || payload.badges || []);
+			const username = sender.username || payload.username || payload.display_name || 'Unknown';
+			const avatar = sender.profile_picture || payload.avatar || payload.profile_picture || '';
+			const content = payload.content || payload.message || payload.text || '';
+			const createdAt = payload.created_at || payload.createdAt || payload.timestamp || new Date().toISOString();
+			const source = options.source || payload.source || (eventType === 'chat.message.sent' ? 'Kick chat' : 'Relay');
+
+			if (!content && eventType !== 'system') return null;
+
+			return {
+				eventType,
+				username,
+				avatar,
+				usernameColor: identity.username_color || payload.username_color || '',
+				content,
+				time: formatTime(createdAt),
+				badges,
+				source,
+			};
+		}
+
+		function buildAuthorizeUrl() {
+			const { clientId, redirectUri, scope } = state.settings;
+			if (!clientId || !redirectUri) throw new Error('Client ID ve Redirect URI gerekli.');
+
+			const verifier = generateCodeVerifier();
+			const stateValue = cryptoRandomString(24);
+			sessionStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, state: stateValue }));
+
+			return deriveCodeChallenge(verifier).then((codeChallenge) => {
+				const url = new URL('https://id.kick.com/oauth/authorize');
+				url.searchParams.set('response_type', 'code');
+				url.searchParams.set('client_id', clientId);
+				url.searchParams.set('redirect_uri', redirectUri);
+				url.searchParams.set('scope', scope || 'events:subscribe channel:read');
+				url.searchParams.set('code_challenge', codeChallenge);
+				url.searchParams.set('code_challenge_method', 'S256');
+				url.searchParams.set('state', stateValue);
+				return url.toString();
+			});
+		}
+
+		async function deriveCodeChallenge(verifier) {
+			const data = new TextEncoder().encode(verifier);
+			const digest = await crypto.subtle.digest('SHA-256', data);
+			return base64UrlEncode(new Uint8Array(digest));
+		}
+
+		function generateCodeVerifier() {
+			const bytes = crypto.getRandomValues(new Uint8Array(64));
+			return base64UrlEncode(bytes).slice(0, 96);
+		}
+
+		function cryptoRandomString(length) {
+			const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+			const bytes = crypto.getRandomValues(new Uint8Array(length));
+			return Array.from(bytes, (value) => alphabet[value % alphabet.length]).join('');
+		}
+
+		function base64UrlEncode(bytes) {
+			let binary = '';
+			for (const value of bytes) binary += String.fromCharCode(value);
+			return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+		}
+
+		async function handleOAuthCallback() {
+			const url = new URL(location.href);
+			const code = url.searchParams.get('code');
+			const returnedState = url.searchParams.get('state');
+			if (!code) return;
+
+			const raw = sessionStorage.getItem(PKCE_KEY);
+			const pkce = raw ? JSON.parse(raw) : null;
+			if (!pkce || pkce.state !== returnedState) {
+				setAuthStatus('State doğrulanamadı', false);
+				appendSystemMessage('OAuth callback state eşleşmedi. Tekrar giriş yapın.');
+				return;
+			}
+
+			try {
+				setAuthStatus('Token alınıyor...', false);
+				const token = await exchangeCodeForToken(code, pkce.verifier);
+				state.accessToken = token.access_token || '';
+				state.refreshToken = token.refresh_token || '';
+				setAuthStatus('OAuth bağlı', true);
+				appendSystemMessage('Kick hesabı başarıyla doğrulandı.');
+				url.searchParams.delete('code');
+				url.searchParams.delete('state');
+				history.replaceState({}, document.title, url.toString());
+			} catch (error) {
+				console.error(error);
+				setAuthStatus('Token alınamadı', false);
+				appendSystemMessage(`OAuth hatası: ${error.message}`);
+			}
+		}
+
+		async function exchangeCodeForToken(code, codeVerifier) {
+			const { clientId, clientSecret, redirectUri } = state.settings;
+			const body = new URLSearchParams();
+			body.set('grant_type', 'authorization_code');
+			body.set('client_id', clientId);
+			body.set('redirect_uri', redirectUri);
+			body.set('code_verifier', codeVerifier);
+			body.set('code', code);
+
+			if (clientSecret) {
+				body.set('client_secret', clientSecret);
+			} else {
+				appendSystemMessage('Client Secret girilmedi. Eğer Kick uygulamanız bunu zorunlu tutuyorsa, token exchange bir backend üzerinden yapılmalıdır.');
+			}
+
+			const response = await fetch('https://id.kick.com/oauth/token', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body,
+			});
+
+			if (!response.ok) {
+				const text = await response.text();
+				throw new Error(`HTTP ${response.status}: ${text}`);
+			}
+
+			return response.json();
+		}
+
+		function connectRelay() {
+			if (state.relay) {
+				state.relay.close();
+				state.relay = null;
+			}
+
+			const url = els.relayUrl.value.trim();
+			if (!url) {
+				appendSystemMessage('Relay URL girin. Örnek: ws://localhost:8787');
+				return;
+			}
+
+			saveSettings();
+			try {
+				const socket = new WebSocket(url);
+				state.relay = socket;
+				setRelayStatus('Bağlanıyor...', false);
+				appendSystemMessage(`Relay başlatılıyor: ${url}`);
+
+				socket.addEventListener('open', () => {
+					state.relayConnected = true;
+					setRelayStatus('Relay bağlı', true);
+					appendSystemMessage('Relay bağlantısı kuruldu. Kick webhook payload bekleniyor.');
+				});
+
+				socket.addEventListener('message', async (event) => {
+					try {
+						const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+						if (data && data.kind === 'system') {
+							appendSystemMessage(data.message || 'Sistem olayı geldi.');
+							return;
+						}
+						appendMessage(data, { source: 'Relay' });
+					} catch (error) {
+						console.error(error);
+						appendSystemMessage('Relay mesajı çözümlenemedi. JSON formatını kontrol edin.');
+					}
+				});
+
+				socket.addEventListener('close', () => {
+					state.relayConnected = false;
+					setRelayStatus('Relay kapalı', false);
+				});
+
+				socket.addEventListener('error', () => {
+					setRelayStatus('Relay hatası', false);
+					appendSystemMessage('Relay bağlantı hatası. Adres, port ve güvenlik duvarını kontrol edin.');
+				});
+			} catch (error) {
+				console.error(error);
+				appendSystemMessage(`Relay açılamadı: ${error.message}`);
+			}
+		}
+
+		function disconnectAll() {
+			if (state.relay) {
+				state.relay.close();
+				state.relay = null;
+			}
+			state.relayConnected = false;
+			setRelayStatus('Bağlı değil', false);
+			setAuthStatus(state.accessToken ? 'OAuth bağlı' : 'Bekleniyor', !!state.accessToken);
+		}
+
+		function injectManualPayload() {
+			const raw = els.manualPayload.value.trim();
+			if (!raw) {
+				appendSystemMessage('Önce bir JSON payload girin.');
+				return;
+			}
+
+			try {
+				const data = JSON.parse(raw);
+				appendMessage(data, { source: 'Manual' });
+			} catch (error) {
+				appendSystemMessage(`JSON hatası: ${error.message}`);
+			}
+		}
+
+		function loadSamplePayload() {
+			els.manualPayload.value = JSON.stringify({
+				message_id: '01JZX6SAMPLE0000000000000',
+				eventType: 'chat.message.sent',
+				content: 'Merhaba chat! Bu mesaj OBS overlay içinde görünür.',
+				created_at: new Date().toISOString(),
+				sender: {
+					username: 'teObot',
+					profile_picture: '',
+					identity: {
+						username_color: '#7df0d0',
+						badges: [
+							{ text: 'Bot', type: 'bot' },
+							{ text: 'Mod', type: 'moderator' },
+						],
+					},
+				},
+			}, null, 2);
+		}
+
+		function fillDemoSettings() {
+			els.clientId.value = 'demo-client-id';
+			els.clientSecret.value = 'demo-client-secret';
+			els.redirectUri.value = `${location.origin}${location.pathname}`;
+			els.channelSlug.value = 'teObot';
+			els.relayUrl.value = 'ws://localhost:8787';
+			els.scope.value = 'events:subscribe channel:read';
+			saveSettings();
+			syncHeaderMeta();
+		}
+
+		function bindEvents() {
+			[els.clientId, els.clientSecret, els.redirectUri, els.channelSlug, els.relayUrl, els.scope].forEach((input) => {
+				input.addEventListener('input', () => {
+					saveSettings();
+					if (input === els.channelSlug) syncHeaderMeta();
+				});
+			});
+
+			els.loginBtn.addEventListener('click', async () => {
+				try {
+					saveSettings();
+					const authUrl = await buildAuthorizeUrl();
+					appendSystemMessage('Kick giriş sayfası açılıyor.');
+					location.href = authUrl;
+				} catch (error) {
+					appendSystemMessage(error.message);
+				}
+			});
+
+			els.connectRelayBtn.addEventListener('click', connectRelay);
+			els.disconnectBtn.addEventListener('click', disconnectAll);
+			els.injectBtn.addEventListener('click', injectManualPayload);
+			els.sampleBtn.addEventListener('click', loadSamplePayload);
+			els.clearBtn.addEventListener('click', () => {
+				els.feed.innerHTML = '';
+				state.count = 0;
+				updateCounters();
+				appendSystemMessage('Sohbet temizlendi.');
+			});
+			els.fillDemo.addEventListener('click', fillDemoSettings);
+		}
+
+		function bootstrap() {
+			syncForm();
+			syncHeaderMeta();
+			bindEvents();
+			updateCounters();
+			setRelayStatus('Bağlı değil', false);
+			setAuthStatus('Bekleniyor', false);
+			setLastEvent('-');
+			appendSystemMessage('Önce Kick OAuth ile giriş yapın, sonra webhook relay’i bağlayın veya örnek payload ekleyin.');
+			handleOAuthCallback();
+			if (state.settings.channelSlug) syncHeaderMeta();
+		}
+
+		bootstrap();
+	</script>
+</body>
+</html>
