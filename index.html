@@ -634,6 +634,13 @@
 			font-family: var(--mono);
 		}
 
+		.message-content .emote-img {
+			height: 1.4em;
+			vertical-align: middle;
+			margin: 0 4px;
+			object-fit: contain;
+		}
+
 		.footer {
 			padding: 14px 20px 18px;
 			border-top: 1px solid var(--border);
@@ -1366,7 +1373,7 @@
 			const safe = escapeHtml(content || '');
 			return safe
 				.replace(/(@[a-zA-Z0-9_]+)/g, '<span class="mention">$1</span>')
-				.replace(/\[emote:([^\]]+)\]/g, '<span class="emote">emote:$1</span>');
+				.replace(/\[emote:([^:]+):([^\]]+)\]/g, '<img src="https://files.kick.com/emotes/$1/fullsize" class="emote-img" alt="$2" title="$2">');
 		}
 
 		function appendSystemMessage(text) {
