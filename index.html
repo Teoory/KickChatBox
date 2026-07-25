@@ -664,6 +664,8 @@
 		body.obs-overlay.obs-minimal .overlay { width: min(900px, 100%); }
 		body.obs-overlay.obs-minimal .minimal-message { display: block; padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 10px; }
 		body.obs-overlay.obs-minimal .minimal-line { padding: 5px 0; color: #fff; font-size: 22px; line-height: 1.35; text-shadow: 0 2px 5px rgba(0,0,0,.75); }
+		body.obs-overlay.obs-minimal .minimal-icons { display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; vertical-align: middle; }
+		body.obs-overlay.obs-minimal .minimal-icons img { width: 22px; height: 22px; object-fit: contain; }
 		body.obs-overlay.obs-minimal .minimal-name { font-weight: 700; margin-right: 14px; }
 		body.obs-overlay.obs-minimal .minimal-content { font-weight: 500; }
 		body.obs-overlay.obs-social .overlay { width: min(560px, 100%); }
@@ -1094,11 +1096,17 @@
 
 
 		function socialBadgeIcons(badges = []) {
-			const iconByType = { broadcaster: 'broadcaster.png', moderator: 'mod.png', vip: 'vip.png', og: 'og.png', subscriber: 'subsucriber.png' };
+			const iconByType = {
+				broadcaster: 'https://raw.githubusercontent.com/Teoory/KickChatBox/refs/heads/main/images/broadcaster.png?token=GHSAT0AAAAAAECY7LCFDU5H5LKPGYYUXYAE2TFFH5Q',
+				moderator: 'https://raw.githubusercontent.com/Teoory/KickChatBox/refs/heads/main/images/mod.png?token=GHSAT0AAAAAAECY7LCEHQ4M5JE54FRPGFBE2TFFIQQ',
+				vip: 'https://raw.githubusercontent.com/Teoory/KickChatBox/refs/heads/main/images/vip.png?token=GHSAT0AAAAAAECY7LCEATWQ7Y2EVEKZ4PVA2TFFJVA',
+				og: 'https://raw.githubusercontent.com/Teoory/KickChatBox/refs/heads/main/images/og.png?token=GHSAT0AAAAAAECY7LCEB3TJULAXCXBYTM6K2TFFI2A',
+				subscriber: 'https://raw.githubusercontent.com/Teoory/KickChatBox/refs/heads/main/images/subsucriber.png?token=GHSAT0AAAAAAECY7LCEABUV7GG4PX3U4XVS2TFFJGQ'
+			};
 			return badges.map((badge) => {
 				const type = String(badge.type || '').toLowerCase();
-				const file = iconByType[type];
-				return file ? `<img src="/images/${file}" alt="${escapeHtml(type)}">` : '';
+				const url = iconByType[type];
+				return url ? `<img src="${url}" alt="${escapeHtml(type)}">` : '';
 			}).join('');
 		}
 
@@ -1141,7 +1149,9 @@
 
 			if (isObsOverlay && state.overlayMode === 'minimal') {
 				el.classList.add('minimal-message');
-				el.innerHTML = `<div class="minimal-line"><span class="minimal-name" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="minimal-content">${renderContent(message.content)}</span></div>`;
+				const badgeHtml = socialBadgeIcons(message.rawBadges);
+				const badgeSpan = badgeHtml ? `<span class="minimal-icons">${badgeHtml}</span>` : '';
+				el.innerHTML = `<div class="minimal-line">${badgeSpan}<span class="minimal-name" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="minimal-content">${renderContent(message.content)}</span></div>`;
 			} else if (isObsOverlay && state.overlayMode === 'social') {
 				const position = isPrivilegedUser(message.rawBadges) ? 'social-right' : 'social-left';
 				el.classList.add('social-message', position);
@@ -1187,7 +1197,8 @@
 			const eventType = payload.eventType || payload.event_type || payload.type || payload['Kick-Event-Type'] || options.eventType || 'chat.message.sent';
 			const sender = payload.sender || payload.user || payload.author || {};
 			const identity = sender.identity || {};
-			const badges = renderBadges(identity.badges || payload.badges || []);
+			const rawBadges = identity.badges || payload.badges || [];
+			const badges = renderBadges(rawBadges);
 			const username = sender.username || payload.username || payload.display_name || 'Unknown';
 			const avatar = sender.profile_picture || payload.avatar || payload.profile_picture || '';
 			const content = payload.content || payload.message || payload.text || '';
@@ -1204,6 +1215,7 @@
 				content,
 				time: formatTime(createdAt),
 				badges,
+				rawBadges,
 				source,
 			};
 		}
