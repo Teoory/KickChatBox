@@ -656,6 +656,28 @@
 		}
 		body.obs-overlay .message.system { display: none; }
 
+
+		.overlay-selector { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 18px 18px; }
+		.overlay-link { display: block; padding: 11px 10px; border-radius: 10px; border: 1px solid var(--border); color: var(--text); text-align: center; text-decoration: none; font-size: 12px; background: rgba(255,255,255,0.04); transition: 160ms ease; }
+		.overlay-link:hover { border-color: rgba(125,240,208,0.45); color: var(--accent); transform: translateY(-1px); }
+		body.obs-overlay .message-source { display: none; }
+		body.obs-overlay.obs-minimal .overlay { width: min(900px, 100%); }
+		body.obs-overlay.obs-minimal .minimal-message { display: block; padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 10px; }
+		body.obs-overlay.obs-minimal .minimal-line { padding: 5px 0; color: #fff; font-size: 22px; line-height: 1.35; text-shadow: 0 2px 5px rgba(0,0,0,.75); }
+		body.obs-overlay.obs-minimal .minimal-name { font-weight: 700; margin-right: 8px; }
+		body.obs-overlay.obs-minimal .minimal-content { font-weight: 500; }
+		body.obs-overlay.obs-social .overlay { width: min(560px, 100%); }
+		body.obs-overlay.obs-social .social-message { display: block; width: min(100%, 520px); padding: 0; border: 0; background: transparent; box-shadow: none; margin-bottom: 16px; }
+		body.obs-overlay.obs-social .social-message.social-right { align-self: flex-end; text-align: right; }
+		body.obs-overlay.obs-social .social-message.social-left { align-self: flex-start; text-align: left; }
+		body.obs-overlay.obs-social .social-head { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 12px; background: rgba(8,13,23,.88); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 6px 16px rgba(0,0,0,.24); }
+		body.obs-overlay.obs-social .social-right .social-head { flex-direction: row-reverse; }
+		body.obs-overlay.obs-social .social-user { font-weight: 700; font-size: 17px; }
+		body.obs-overlay.obs-social .social-icons { display: inline-flex; align-items: center; gap: 5px; }
+		body.obs-overlay.obs-social .social-icons img { width: 19px; height: 19px; object-fit: contain; }
+		body.obs-overlay.obs-social .social-content { padding: 7px 2px 0; color: #fff; font-size: 18px; line-height: 1.4; text-shadow: 0 2px 5px rgba(0,0,0,.78); }
+		@media (max-width: 760px) { .overlay-selector { grid-template-columns: 1fr; } }
+
 		@keyframes enter {
 			from { transform: translateY(8px); opacity: 0; }
 			to { transform: translateY(0); opacity: 1; }
@@ -716,6 +738,19 @@
 			</div>
 
 			<div class="scroll-area">
+				<section class="section">
+					<div class="section-header">
+						<div>
+							<div class="section-title">OBS Overlay Görünümleri</div>
+							<div class="section-note">Kanal ve relay ayarların bağlantılara otomatik eklenir.</div>
+						</div>
+					</div>
+					<div class="overlay-selector">
+						<a class="overlay-link" data-overlay-mode="classic" target="_blank" rel="noopener">Kartlı overlay</a>
+						<a class="overlay-link" data-overlay-mode="minimal" target="_blank" rel="noopener">Minimal overlay</a>
+						<a class="overlay-link" data-overlay-mode="social" target="_blank" rel="noopener">Social overlay</a>
+					</div>
+				</section>
 				<section class="section">
 					<div class="section-header">
 						<div>
@@ -838,6 +873,8 @@
 			count: 0,
 			lastEvent: '-',
 			settings: loadSettings(),
+			overlayMode: 'classic',
+			overlayDuration: 30,
 		};
 
 		const els = {
@@ -870,6 +907,7 @@
 			feed: document.getElementById('feed'),
 			footerLeft: document.getElementById('footerLeft'),
 			footerRight: document.getElementById('footerRight'),
+			overlayLinks: document.querySelectorAll('[data-overlay-mode]'),
 		};
 
 		function loadSettings() {
@@ -938,12 +976,28 @@
 
 
 		function applyOverlayUrlSettings() {
-			if (!isObsOverlay) return;
 			const params = new URLSearchParams(location.search);
+			if (!isObsOverlay) return;
 			const channel = params.get('channel')?.trim();
 			const relay = params.get('relay')?.trim();
+			const mode = params.get('mode')?.trim().toLowerCase();
+			const duration = Number(params.get('duration'));
 			if (channel) state.settings.channelSlug = channel;
 			if (relay) state.settings.relayUrl = relay;
+			state.overlayMode = ['classic', 'minimal', 'social'].includes(mode) ? mode : 'classic';
+			state.overlayDuration = Number.isFinite(duration) && duration >= 0 ? duration : 30;
+		}
+
+		function syncOverlayLinks() {
+			const runtime = runtimeDefaults();
+			els.overlayLinks.forEach((link) => {
+				const params = new URLSearchParams({ mode: link.dataset.overlayMode, duration: '30' });
+				const channel = state.settings.channelSlug?.trim();
+				const relay = state.settings.relayUrl?.trim();
+				if (channel) params.set('channel', channel);
+				if (relay && relay !== runtime.relayUrl) params.set('relay', relay);
+				link.href = `/overlay?${params.toString()}`;
+			});
 		}
 
 		function saveSettings() {
@@ -957,6 +1011,7 @@
 			};
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings));
 			syncHeaderMeta();
+			syncOverlayLinks();
 		}
 
 		function syncForm() {
@@ -977,7 +1032,7 @@
 				? `${channel} kanalından gelen mesajlar burada görünecek.`
 				: 'Hazır olduğunda gelen Kick chat mesajları burada akacak.';
 			els.channelAvatar.textContent = (channel || 'K').slice(0, 1).toUpperCase();
-			document.getElementById('notes').value = `Kick webhooks public bir URL ister. Bu tek HTML dosyası, canlı mesajları göstermek için bir WebSocket relay bekler.\n\nBu ortam için önerilen değerler:\n- Redirect URI: ${runtime.redirectUri}\n- WebSocket Relay URL: ${runtime.relayUrl}\n- Webhook URL: ${runtime.redirectUri}webhook\n\nRelay, Kick webhook payload'larını alıp bu sayfaya aktarmalıdır.`;
+			document.getElementById('notes').value = `Bu ortam için önerilen değerler:\n- Redirect URI: ${runtime.redirectUri}\n- WebSocket Relay URL: ${runtime.relayUrl}\n- Webhook URL: https://kickchatbox.onrender.com/webhook\n\nOBS, Tarayıcı Kaynağı olarak "https://kickchatbox.onrender.com/overlay?mode=minimal&channel=teOry&duration=0" sohbet silinmez veya "https://kickchatbox.onrender.com/overlay?mode=social&channel=teOry&duration=30" sohbet 30 saniye sonra kaybolur.\n\nOverylay: /overlay?mode=classic, /overlay?mode=minimal, /overlay?mode=social\nDuration: &duration=30, &duration=0, &duration=13 \n\n\n\nRelay, Kick webhook payload'larını alıp bu sayfaya iletmelidir.`;
 		}
 
 		function setAuthStatus(text, connected = false) {
@@ -1037,6 +1092,30 @@
 			}).join('');
 		}
 
+
+		function socialBadgeIcons(badges = []) {
+			const iconByType = { broadcaster: 'broadcaster.png', moderator: 'mod.png', vip: 'vip.png', og: 'og.png', subscriber: 'subsucriber.png' };
+			return badges.map((badge) => {
+				const type = String(badge.type || '').toLowerCase();
+				const file = iconByType[type];
+				return file ? `<img src="/images/${file}" alt="${escapeHtml(type)}">` : '';
+			}).join('');
+		}
+
+		function isPrivilegedUser(badges = []) {
+			return badges.some((badge) => ['broadcaster', 'moderator'].includes(String(badge.type || '').toLowerCase()));
+		}
+
+		function scheduleMessageExpiry(el) {
+			if (!isObsOverlay || state.overlayDuration === 0) return;
+			window.setTimeout(() => {
+				if (!el.isConnected) return;
+				el.remove();
+				state.count = Math.max(0, state.count - 1);
+				updateCounters();
+			}, state.overlayDuration * 1000);
+		}
+
 		function renderContent(content) {
 			const safe = escapeHtml(content || '');
 			return safe
@@ -1060,32 +1139,27 @@
 			const el = document.createElement('article');
 			el.className = 'message';
 
-			const avatarContent = message.avatar
-				? `<img src="${escapeHtml(message.avatar)}" alt="${escapeHtml(message.username)} avatar" referrerpolicy="no-referrer">`
-				: escapeHtml(initials(message.username));
-
-			el.innerHTML = `
-				<div class="avatar">${avatarContent}</div>
-				<div>
-					<div class="message-head">
-						<div class="message-name">
-							<span class="name-text" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span>
-							<span class="message-time">${escapeHtml(message.time)}</span>
-						</div>
-						<div class="message-time">${escapeHtml(message.source)}</div>
-					</div>
-					<div class="message-content">${renderContent(message.content)}</div>
-					${message.badges ? `<div class="badges">${message.badges}</div>` : ''}
-				</div>
-			`;
+			if (isObsOverlay && state.overlayMode === 'minimal') {
+				el.classList.add('minimal-message');
+				el.innerHTML = `<div class="minimal-line"><span class="minimal-name" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="minimal-content">${renderContent(message.content)}</span></div>`;
+			} else if (isObsOverlay && state.overlayMode === 'social') {
+				const position = isPrivilegedUser(message.rawBadges) ? 'social-right' : 'social-left';
+				el.classList.add('social-message', position);
+				el.innerHTML = `<div class="social-head"><span class="social-user" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="social-icons">${socialBadgeIcons(message.rawBadges)}</span></div><div class="social-content">${renderContent(message.content)}</div>`;
+			} else {
+				const avatarContent = message.avatar
+					? `<img src="${escapeHtml(message.avatar)}" alt="${escapeHtml(message.username)} avatar" referrerpolicy="no-referrer">`
+					: escapeHtml(initials(message.username));
+				el.innerHTML = `<div class="avatar">${avatarContent}</div><div><div class="message-head"><div class="message-name"><span class="name-text" style="${message.usernameColor ? `color:${message.usernameColor};` : ''}">${escapeHtml(message.username)}</span><span class="message-time">${escapeHtml(message.time)}</span></div><div class="message-time message-source">${isObsOverlay ? '' : escapeHtml(message.source)}</div></div><div class="message-content">${renderContent(message.content)}</div>${message.badges ? `<div class="badges">${message.badges}</div>` : ''}</div>`;
+			}
 
 			els.feed.prepend(el);
 			state.count += 1;
 			updateCounters();
 			setLastEvent(message.eventType || message.source || 'chat.message.sent');
 			trimFeed();
+			scheduleMessageExpiry(el);
 		}
-
 		function trimFeed() {
 			while (els.feed.children.length > 40) {
 				els.feed.removeChild(els.feed.lastElementChild);
@@ -1471,7 +1545,7 @@
 			setAuthStatus(state.accessToken ? 'OAuth bağlı' : 'Bekleniyor', !!state.accessToken);
 			setLastEvent('-');
 			if (isObsOverlay) {
-				document.body.classList.add('obs-overlay');
+				document.body.classList.add('obs-overlay', `obs-`);
 				connectRelay();
 			} else {
 				appendSystemMessage('Önce Kick OAuth ile giriş yapın, sonra webhook relay’i bağlayın veya örnek payload ekleyin.');

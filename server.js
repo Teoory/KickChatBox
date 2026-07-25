@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = Number.parseInt(process.env.PORT || '8787', 10);
 const indexPath = path.join(__dirname, 'index.html');
+const imageDir = path.join(__dirname, 'images');
 const publicBaseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
 
 const clients = new Set();
@@ -63,6 +64,22 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.method === 'GET' && url.pathname.startsWith('/images/')) {
+    const filename = path.basename(url.pathname);
+    if (!/^[a-z]+\.png$/i.test(filename)) {
+      res.writeHead(404).end();
+      return;
+    }
+
+    try {
+      const image = await readFile(path.join(imageDir, filename));
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' });
+      res.end(image);
+    } catch {
+      res.writeHead(404).end();
+    }
+    return;
+  }
   if (req.method === 'GET' && url.pathname === '/auth/callback') {
     const html = await readFile(indexPath, 'utf8');
     res.writeHead(200, {
